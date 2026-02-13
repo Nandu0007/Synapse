@@ -341,6 +341,7 @@ body::before {
     -webkit-backdrop-filter: blur(20px);
     border-right: 1px solid var(--border-color);
     border-bottom: none;
+    transition: width 0.3s var(--ease-out), left 0.3s var(--ease-out), padding 0.3s var(--ease-out);
 }
 
 .nav-brand {
@@ -444,10 +445,12 @@ body::before {
 .container {
     max-width: 1200px;
     margin-left: 260px;
+    margin-right: auto;
     padding: var(--space-xl) var(--space-2xl) var(--space-3xl);
     position: relative;
     z-index: 1;
     min-height: 100vh;
+    transition: margin-left 0.3s var(--ease-out), padding 0.3s var(--ease-out);
 }
 
 .page {
@@ -1507,6 +1510,53 @@ body::before {
     .stats-section {
         flex-direction: column;
         align-items: stretch;
+    }
+}
+
+/* --- Tablet Breakpoint: Rail Sidebar --- */
+@media (min-width: 769px) and (max-width: 1100px) {
+    .nav {
+        width: 80px;
+        padding: var(--space-lg) var(--space-xs);
+        align-items: center;
+    }
+
+    .nav-brand {
+        justify-content: center;
+        padding-bottom: var(--space-md);
+    }
+
+    .nav-title,
+    .nav-link .icon+span,
+    .nav-link span:last-child {
+        display: none;
+    }
+
+    .nav-link {
+        padding: var(--space-md);
+        justify-content: center;
+    }
+
+    .container {
+        margin-left: 80px;
+        padding: var(--space-xl);
+    }
+}
+
+/* --- Ultra-Wide Breakpoint: Centered Assembly --- */
+@media (min-width: 1600px) {
+    :root {
+        --app-max-width: 1460px;
+        /* 260 sidebar + 1200 container */
+    }
+
+    .nav {
+        left: calc((100vw - var(--app-max-width)) / 2);
+    }
+
+    .container {
+        margin-left: calc((100vw - var(--app-max-width)) / 2 + 260px);
+        margin-right: calc((100vw - var(--app-max-width)) / 2);
     }
 }
 
