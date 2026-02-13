@@ -5,7 +5,7 @@
 <!-- Add your full name, contact info, and resume details below -->
 
 > [!TIP]
-> **View my full resume**: [Nandish_Resume.pdf](file:///Users/nandu/Desktop/Aggroso%20Project/public/assets/resume.pdf)
+> **View my full resume**: [Nandish_Resume.pdf](./public/assets/resume.pdf)
 
 ### Contact
 
