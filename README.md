@@ -4,6 +4,9 @@ A professional, minimal web app where you can upload documents (text, PDFs, imag
 
 ![Node.js](https://img.shields.io/badge/Node.js-18+-green) ![Gemini](https://img.shields.io/badge/LLM-Gemini%201.5%20Flash-blue) ![SQLite](https://img.shields.io/badge/DB-SQLite-lightgrey)
 
+> [!NOTE]
+> **Hosted on free tier** - first load may take 30 seconds to wake up ⚠️
+
 ## Features
 
 - **Professional Minimal UI** — "Synapse" branding with a matte black theme
