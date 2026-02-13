@@ -1,22 +1,57 @@
 # About Me
 
-## Nandu
+## Nandish
 
 <!-- Add your full name, contact info, and resume details below -->
 
+> [!TIP]
+> **View my full resume**: [Nandish_Resume.pdf](file:///Users/nandu/Desktop/Aggroso%20Project/public/assets/resume.pdf)
+
 ### Contact
 
-- **Email**: [your email]
-- **GitHub**: [your GitHub profile]
-- **LinkedIn**: [your LinkedIn profile]
+- **Email**: [nandishreddy00700@gmail.com](mailto:nandishreddy00700@gmail.com)
+- **GitHub**: [github.com/Nandu0007](https://github.com/Nandu0007)
+- **LinkedIn**: [linkedin.com/in/nandish-reddy-a05810243](https://www.linkedin.com/in/nandish-reddy-a05810243)
+- **Phone**: +91 8971433617
+
+### Professional Projects & Experience
+
+#### AI-Powered Code Review Assistant
+*September 2025 – October 2025*
+- Fine-tuned language models on high-quality code review data.
+- Built automated review workflows for GitHub, GitLab, and Bitbucket.
+- Provided intelligent suggestions on pull requests and visualized code quality trends.
+
+#### Collaborative Code Editor
+*August 2025 – September 2025*
+- Built a real-time collaborative code editor with live syntax highlighting.
+- Implemented WebSocket communication and conflict resolution.
+- Designed a scalable, low-latency backend with secure authentication.
+
+#### Facial Emotion Recognition
+*September 2024 – October 2024*
+- Implemented CNN-based architecture for emotion classification.
+- Pre-processed and augmented image datasets to improve model robustness.
+- Integrated the model into an interactive application for real-time detection.
+
+### Education
+
+#### B.Tech Computer Science (AI & ML)
+*CMR University, Bengaluru | 2022 – 2026*
+
+### Certifications
+
+- **Oracle**: Certified Generative AI Professional (2025)
+- **upGrad**: Advanced Certificate in Full Stack Development (Ongoing)
+- **Infosys Springboard**: NLP using Stanford CoreNLP & Python, Azure DevOps
 
 ### Skills
 
-- **Backend**: Node.js, Express, REST APIs
-- **Frontend**: HTML, CSS, JavaScript (vanilla & frameworks)
-- **Databases**: SQLite, PostgreSQL, MongoDB
-- **AI/ML**: RAG pipelines, embeddings, Gemini API, prompt engineering
-- **Tools**: Git, VS Code, npm
+- **Backend**: Node.js, Java, Python, RESTful APIs
+- **Frontend**: HTML, CSS, JavaScript (Vanilla & Modern Frameworks)
+- **Databases**: SQL, Database Management & Scalable Architecture
+- **AI/ML**: Generative AI, NLP, CNNs, Computer Vision, RAG Pipelines
+- **Tools**: Git, Docker, Oracle Cloud, VS Code
 
 ### About This Project
 
