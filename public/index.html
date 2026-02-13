@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Synapse — Upload documents, ask questions, and get AI-powered answers with source attribution.">
+  <title>Synapse — AI Knowledge Base</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <!-- Navigation -->
+  <div class="ambient-background">
+    <canvas id="bg-canvas"></canvas>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <nav class="nav" id="main-nav">
+    <div class="nav-brand" onclick="navigate('home')">
+      <span class="nav-logo">✦</span>
+      <span class="nav-title">Synapse</span>
+    </div>
+    <div class="nav-links" id="nav-links">
+      <a href="#" class="nav-link active" data-page="home" onclick="navigate('home')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        Home
+      </a>
+      <a href="#" class="nav-link" data-page="documents" onclick="navigate('documents')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+          <polyline points="14 2 14 8 20 8" />
+        </svg>
+        Documents
+      </a>
+      <a href="#" class="nav-link" data-page="ask" onclick="navigate('ask')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        Ask
+      </a>
+      <a href="#" class="nav-link" data-page="status" onclick="navigate('status')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+        </svg>
+        Status
+      </a>
+    </div>
+    <div class="nav-user" id="nav-user" style="display:none;">
+      <span class="user-badge" id="user-badge"></span>
+      <button class="btn btn-sm btn-secondary" onclick="logout()">Logout</button>
+    </div>
+    <button class="nav-mobile-toggle" onclick="toggleMobileNav()" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Page Container -->
+  <main class="container" id="app">
+
+    <!-- === AUTH PAGE === -->
+    <section class="page" id="page-auth">
+      <div class="auth-container">
+        <div class="auth-card">
+          <div class="auth-header">
+            <span class="auth-logo">✦</span>
+            <h1>Synapse</h1>
+            <p>AI-powered knowledge base</p>
+          </div>
+
+          <!-- Login Form -->
+          <form class="auth-form" id="login-form" onsubmit="handleLogin(event)">
+            <h2>Sign In</h2>
+            <div class="form-group">
+              <label for="login-email">Email</label>
+              <input type="email" id="login-email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" placeholder="••••••••" required minlength="6">
+            </div>
+            <div class="form-group checkbox-group">
+              <input type="checkbox" id="login-remember">
+              <label for="login-remember">Remember me</label>
+            </div>
+            <div class="auth-error" id="login-error" style="display:none;"></div>
+            <button type="submit" class="btn btn-primary btn-block" id="login-btn">Sign In</button>
+            <p class="auth-switch">Don't have an account? <a href="#" onclick="showRegister()">Create one</a></p>
+          </form>
+
+          <!-- Register Form -->
+          <form class="auth-form" id="register-form" style="display:none;" onsubmit="handleRegister(event)">
+            <h2>Create Account</h2>
+            <div class="form-group">
+              <label for="reg-username">Username</label>
+              <input type="text" id="reg-username" placeholder="johndoe" required minlength="3" maxlength="30">
+            </div>
+            <div class="form-group">
+              <label for="reg-email">Email</label>
+              <input type="email" id="reg-email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+              <label for="reg-password">Password</label>
+              <input type="password" id="reg-password" placeholder="Min. 6 characters" required minlength="6">
+            </div>
+            <div class="auth-error" id="register-error" style="display:none;"></div>
+            <button type="submit" class="btn btn-primary btn-block" id="register-btn">Create Account</button>
+            <p class="auth-switch">Already have an account? <a href="#" onclick="showLogin()">Sign in</a></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- === HOME PAGE === -->
+    <section class="page" id="page-home">
+      <div class="hero reveal">
+        <div class="hero-glow"></div>
+        <h1 class="hero-title">Your <span class="gradient-text">Knowledge Base</span></h1>
+        <p class="hero-subtitle">Upload documents, ask questions, and get AI-powered answers with source attribution.
+          Your knowledge, illuminated.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" onclick="navigate('documents')">
+            <span class="btn-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="icon">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" x2="12" y1="3" y2="15" />
+              </svg></span> Upload Documents
+          </button>
+          <button class="btn btn-secondary btn-lg" onclick="navigate('ask')">
+            <span class="btn-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="icon">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg></span> Ask a Question
+          </button>
+        </div>
+      </div>
+
+      <div class="steps-section reveal">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" x2="12" y1="3" y2="15" />
+              </svg>
+            </div>
+            <h3>Upload</h3>
+            <p>Add your documents — text files, PDFs, or images with text content.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
+                <rect x="9" y="9" width="6" height="6" />
+                <line x1="9" x2="9" y1="1" y2="4" />
+                <line x1="15" x2="15" y1="1" y2="4" />
+                <line x1="9" x2="9" y1="20" y2="23" />
+                <line x1="15" x2="15" y1="20" y2="23" />
+                <line x1="20" x2="23" y1="9" y2="9" />
+                <line x1="20" x2="23" y1="14" y2="14" />
+                <line x1="1" x2="4" y1="9" y2="9" />
+                <line x1="1" x2="4" y1="14" y2="14" />
+              </svg>
+            </div>
+            <h3>Process</h3>
+            <p>Documents are automatically split into chunks and indexed using AI embeddings.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </div>
+            <h3>Ask</h3>
+            <p>Ask any question — the AI finds relevant passages and generates an answer.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">4</div>
+            <div class="step-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+            </div>
+            <h3>Verify</h3>
+            <p>See exactly which documents and passages the answer came from.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-section reveal" id="home-stats">
+      </div>
+    </section>
+
+    <!-- === DOCUMENTS PAGE === -->
+    <section class="page" id="page-documents">
+      <div class="page-header">
+        <h1 class="page-title">📄 Documents</h1>
+        <p class="page-subtitle">Upload and manage your knowledge base documents</p>
+      </div>
+
+      <div class="upload-area" id="upload-area">
+        <div class="upload-dropzone" id="dropzone">
+          <div class="upload-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon">
+              <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+              <path d="M12 12v9" />
+              <path d="m16 16-4-4-4 4" />
+            </svg>
+          </div>
+          <h3>Drop your files here</h3>
+          <p>or click to browse</p>
+          <p class="upload-hint">Supported: .txt, .md, .csv, .json, .pdf, .png, .jpg, .gif, .webp, .bmp, .tiff (max
+            10MB)</p>
+          <input type="file" id="file-input"
+            accept=".txt,.md,.csv,.json,.log,.xml,.html,.css,.js,.py,.java,.c,.cpp,.h,.pdf,.png,.jpg,.jpeg,.gif,.webp,.bmp,.tiff,.tif,application/pdf,image/*"
+            hidden>
+        </div>
+        <div class="upload-progress" id="upload-progress" style="display:none;">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <p class="upload-status" id="upload-status">Uploading...</p>
+        </div>
+      </div>
+
+      <div class="doc-list-section">
+        <div class="doc-list-header">
+          <h2>Uploaded Documents</h2>
+          <span class="doc-count" id="doc-count">0 documents</span>
+        </div>
+        <div class="doc-list" id="doc-list">
+          <div class="empty-state" id="doc-empty-state">
+            <div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                class="icon">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" x2="12" y1="3" y2="15" />
+              </svg></div>
+            <h3>No documents yet</h3>
+            <p>Upload your first document to get started</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- === ASK PAGE (Chat UI) === -->
+    <section class="page" id="page-ask">
+      <div class="chat-layout">
+        <!-- Conversation Sidebar -->
+        <aside class="conv-sidebar" id="conv-sidebar">
+          <div class="conv-sidebar-header">
+            <h3>💬 Conversations</h3>
+            <button class="btn btn-sm btn-primary" onclick="startNewConversation()" title="New conversation">+
+              New</button>
+          </div>
+          <div class="conv-list" id="conv-list">
+            <div class="conv-empty">No conversations yet</div>
+          </div>
+        </aside>
+
+        <!-- Chat Area -->
+        <div class="chat-area">
+          <div class="chat-header" id="chat-header">
+            <button class="btn btn-sm btn-secondary conv-toggle-btn" onclick="toggleConvSidebar()">☰</button>
+            <h2 id="chat-title">New Conversation</h2>
+          </div>
+
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-welcome" id="chat-welcome">
+              <div class="chat-welcome-icon">💬</div>
+              <h3>Ask a Question</h3>
+              <p>Get AI-powered answers from your uploaded documents.<br>Your conversation history is saved for
+                follow-up questions.</p>
+            </div>
+          </div>
+
+          <div class="chat-input-area">
+            <div class="chat-input-wrapper">
+              <textarea id="question-input" class="chat-input" placeholder="Ask something about your documents..."
+                rows="1" maxlength="2000"></textarea>
+              <button class="btn btn-primary chat-send-btn" id="ask-btn" onclick="sendMessage()">
+                <span>Send</span>
+              </button>
+            </div>
+            <div class="chat-input-hint">
+              <span class="char-count" id="char-count">0 / 2000</span>
+              <span>Press Ctrl+Enter to send</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- === STATUS PAGE === -->
+    <section class="page" id="page-status">
+      <div class="page-header">
+        <div class="page-header">
+          <h1 class="page-title"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="icon" style="color: var(--accent-primary);">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg> System Status</h1>
+          <p class="page-subtitle">Real-time health check for Synapse services</p>
+        </div>
+        <p class="page-subtitle">Health check for backend, database, and LLM services</p>
+      </div>
+
+      <div class="status-grid" id="status-grid">
+        <!-- Backend -->
+        <div class="status-card" id="status-backend">
+          <div class="status-icon-container">
+            <div class="status-icon spin">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+              </svg>
+            </div>
+          </div>
+          <div class="status-info">
+            <h3>Backend Server</h3>
+            <p class="status-message">Checking...</p>
+          </div>
+        </div>
+
+        <!-- Database -->
+        <div class="status-card" id="status-database">
+          <div class="status-icon-container">
+            <div class="status-icon spin">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+              </svg>
+            </div>
+          </div>
+          <div class="status-info">
+            <h3>Database (SQLite)</h3>
+            <p class="status-message">Checking...</p>
+          </div>
+        </div>
+
+        <!-- LLM -->
+        <div class="status-card" id="status-llm">
+          <div class="status-icon-container">
+            <div class="status-icon spin">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+              </svg>
+            </div>
+          </div>
+          <div class="status-info">
+            <h3>LLM (Gemini API)</h3>
+            <p class="status-message">Checking...</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-footer">
+        <p class="status-timestamp" id="status-timestamp">Last checked: —</p>
+        <button class="btn btn-secondary" onclick="checkHealth()">
+          <span class="btn-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="icon">
+              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+              <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+              <path d="M16 21h5v-5" />
+            </svg></span> Refresh
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirm-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-icon">⚠️</div>
+      <h3 class="modal-title">Confirm Action</h3>
+      <p class="modal-message">Are you sure you want to proceed?</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
+        <button class="btn btn-danger" id="confirm-ok">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/background.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+
+</html>
