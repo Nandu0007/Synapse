@@ -1,8 +1,6 @@
 # About Me
 
-## Nandish
-
-<!-- Add your full name, contact info, and resume details below -->
+## Nandish P
 
 > [!TIP]
 > **View my full resume**: [Nandish_Resume.pdf](./public/assets/resume.pdf)
