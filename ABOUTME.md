@@ -22,11 +22,23 @@
 - Built automated review workflows for GitHub, GitLab, and Bitbucket.
 - Provided intelligent suggestions on pull requests and visualized code quality trends.
 
+#### Audio Room
+*September 2025 – October 2025*
+- Designed and managed live audio rooms for interactive discussions.
+- Facilitated audience engagement and real-time moderation.
+- Implemented strategies to enhance community participation and ensured smooth audio quality.
+
 #### Collaborative Code Editor
 *August 2025 – September 2025*
 - Built a real-time collaborative code editor with live syntax highlighting.
 - Implemented WebSocket communication and conflict resolution.
 - Designed a scalable, low-latency backend with secure authentication.
+
+#### Personal Finance Tracker
+*June 2025 – July 2025*
+- Designed and implemented a tracker to monitor income, expenses, and savings.
+- Automated expense categorization and generated monthly financial reports.
+- Developed intuitive dashboards to visualize cash flow and trends.
 
 #### Facial Emotion Recognition
 *September 2024 – October 2024*
