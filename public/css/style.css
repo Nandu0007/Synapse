@@ -1405,14 +1405,16 @@ body::before {
 @media (max-width: 768px) {
     .nav {
         width: 100%;
-        height: auto;
+        height: 64px;
         bottom: auto;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
-        padding: var(--space-md);
+        padding: 0 var(--space-md);
         border-right: none;
         border-bottom: 1px solid var(--border-color);
+        left: 0;
+        top: 0;
     }
 
     .nav-brand {
@@ -1456,7 +1458,10 @@ body::before {
     }
 
     .container {
-        padding: 80px var(--space-md) var(--space-2xl);
+        margin-left: 0;
+        width: 100%;
+        max-width: 100%;
+        padding: 84px var(--space-md) var(--space-2xl);
     }
 
     .doc-item {
