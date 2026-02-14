@@ -20,9 +20,20 @@ function auth(req, res, next) {
 
     try {
         const payload = jwt.verify(token, JWT_SECRET);
-        req.user = { id: payload.id, username: payload.username, email: payload.email };
+
+        // Verify user still exists in DB (crucial for Render's ephemeral filesystem)
+        const { getDb } = require('../db');
+        const db = getDb();
+        const user = db.prepare('SELECT id, username, email FROM users WHERE id = ?').get(payload.id);
+
+        if (!user) {
+            console.warn(`AUTH: User ID ${payload.id} not found in database. Possible DB wipe.`);
+            return res.status(401).json({ error: 'User account no longer exists. Please register again. (ERR_USER_NOT_FOUND)' });
+        }
+
+        req.user = user;
         next();
-    } catch {
+    } catch (err) {
         return res.status(401).json({ error: 'Invalid or expired token.' });
     }
 }
