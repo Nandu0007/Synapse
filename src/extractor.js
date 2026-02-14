@@ -63,7 +63,7 @@ async function extractImage(buffer, mimetype) {
     if (!apiKey) throw new Error('GEMINI_API_KEY not set — cannot extract text from images.');
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const prompt = `Analyze this image and extract ALL text content from it.
 If it contains text (handwritten, printed, typed), extract and return all of it preserving structure.

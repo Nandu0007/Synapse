@@ -84,7 +84,7 @@ router.post('/', upload.single('file'), async (req, res) => {
         if (err.message?.includes('not supported')) {
             return res.status(400).json({ error: err.message });
         }
-        console.error('Upload error:', err);
+        console.error('Upload error details:', err);
         res.status(500).json({ error: 'Failed to upload document.' });
     }
 });

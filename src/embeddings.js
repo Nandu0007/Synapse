@@ -95,7 +95,7 @@ async function askQuestion(question, chunks, history = []) {
             '\n';
     }
 
-    const model = client.getGenerativeModel({ model: 'gemini-flash-latest' });
+    const model = client.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const prompt = `You are a helpful knowledge assistant. Answer the user's question based ONLY on the provided context from their documents. If the context doesn't contain enough information to answer the question, say so clearly.
 
