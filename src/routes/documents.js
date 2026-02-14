@@ -31,32 +31,48 @@ router.post('/', upload.single('file'), async (req, res) => {
         }
 
         const name = req.file.originalname;
+        console.log(`DEBUG: [Upload] Starting process for "${name}" (${req.file.mimetype}, ${req.file.size} bytes)`);
 
         let content;
         try {
+            console.log(`DEBUG: [Upload] Starting extraction for "${name}"...`);
             content = await extractText(req.file.buffer, name, req.file.mimetype);
+            console.log(`DEBUG: [Upload] Extraction successful. Content length: ${content.length}`);
         } catch (err) {
-            return res.status(400).json({ error: err.message });
+            console.error(`DEBUG: [Upload] Extraction FAILED for "${name}":`, err);
+            return res.status(400).json({ error: `Extraction failed: ${err.message} (ERR_EXTRACT)` });
         }
 
         if (!content.trim()) {
-            return res.status(400).json({ error: 'No text could be extracted from the file.' });
+            return res.status(400).json({ error: 'No text could be extracted from the file. (ERR_EMPTY_CONTENT)' });
         }
 
         const db = getDb();
 
-        const result = db.prepare(
-            'INSERT INTO documents (name, content, size, mime_type, original_file, user_id) VALUES (?, ?, ?, ?, ?, ?)'
-        ).run(name, content, req.file.size, req.file.mimetype, req.file.buffer, req.user.id);
-        const docId = result.lastInsertRowid;
+        let docId;
+        try {
+            console.log(`DEBUG: [Upload] Inserting document metadata into DB...`);
+            const result = db.prepare(
+                'INSERT INTO documents (name, content, size, mime_type, original_file, user_id) VALUES (?, ?, ?, ?, ?, ?)'
+            ).run(name, content, req.file.size, req.file.mimetype, req.file.buffer, req.user.id);
+            docId = result.lastInsertRowid;
+            console.log(`DEBUG: [Upload] DB insertion successful. Doc ID: ${docId}`);
+        } catch (err) {
+            console.error(`DEBUG: [Upload] DB insertion FAILED for "${name}":`, err);
+            return res.status(500).json({ error: `Failed to save document metadata. ${err.message} (ERR_DB)` });
+        }
 
+        console.log(`DEBUG: [Upload] Starting chunking...`);
         const chunks = chunkText(content);
+        console.log(`DEBUG: [Upload] Chunking complete. Generated ${chunks.length} chunks.`);
 
         let embeddings;
         try {
+            console.log(`DEBUG: [Upload] Generating embeddings for ${chunks.length} chunks...`);
             embeddings = await generateEmbeddings(chunks);
+            console.log(`DEBUG: [Upload] Embeddings generation successful.`);
         } catch (err) {
-            console.error('Embedding failed:', err.message);
+            console.error(`DEBUG: [Upload] Embedding FAILED for "${name}":`, err.message);
             const insert = db.prepare(
                 'INSERT INTO chunks (doc_id, text, embedding, chunk_index) VALUES (?, ?, ?, ?)'
             );
@@ -66,16 +82,23 @@ router.post('/', upload.single('file'), async (req, res) => {
 
             return res.status(201).json({
                 id: Number(docId), name, size: req.file.size, chunks: chunks.length,
-                warning: 'Saved but embeddings failed. Q&A may not work for this document.',
+                warning: 'Saved but embeddings failed. Q&A may not work for this document. (WARN_EMBEDDING)',
             });
         }
 
-        const insert = db.prepare(
-            'INSERT INTO chunks (doc_id, text, embedding, chunk_index) VALUES (?, ?, ?, ?)'
-        );
-        db.transaction(() => {
-            chunks.forEach((c, i) => insert.run(docId, c, JSON.stringify(embeddings[i]), i));
-        })();
+        try {
+            console.log(`DEBUG: [Upload] Saving ${chunks.length} chunks to DB...`);
+            const insert = db.prepare(
+                'INSERT INTO chunks (doc_id, text, embedding, chunk_index) VALUES (?, ?, ?, ?)'
+            );
+            db.transaction(() => {
+                chunks.forEach((c, i) => insert.run(docId, c, JSON.stringify(embeddings[i]), i));
+            })();
+            console.log(`DEBUG: [Upload] Chunks saved successfully.`);
+        } catch (err) {
+            console.error(`DEBUG: [Upload] Saving chunks FAILED for "${name}":`, err);
+            return res.status(500).json({ error: `Failed to save document chunks. ${err.message} (ERR_CHUNK)` });
+        }
 
         res.status(201).json({
             id: Number(docId), name, size: req.file.size, chunks: chunks.length,
@@ -84,8 +107,8 @@ router.post('/', upload.single('file'), async (req, res) => {
         if (err.message?.includes('not supported')) {
             return res.status(400).json({ error: err.message });
         }
-        console.error('Upload error details:', err);
-        res.status(500).json({ error: 'Failed to upload document.' });
+        console.error('DEBUG: [Upload] Unexpected error details:', err);
+        res.status(500).json({ error: `Failed to upload document. ${err.message} (ERR_UNKNOWN)` });
     }
 });
 
