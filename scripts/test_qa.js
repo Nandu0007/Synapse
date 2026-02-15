@@ -55,7 +55,7 @@ async function testQA() {
         console.log('Upload Status:', uploadRes.status);
 
         console.log('\n--- 4. Asking Question ---');
-        const qaRes = await fetch(`${API_BASE}/api/qa`, {
+        const qaRes = await fetch(`${API_BASE}/api/ask`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
