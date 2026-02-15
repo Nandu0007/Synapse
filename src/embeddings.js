@@ -96,7 +96,6 @@ async function askQuestion(question, chunks, history = []) {
     }
 
     const model = client.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
     const prompt = `You are a helpful knowledge assistant. Answer the user's question based ONLY on the provided context from their documents. If the context doesn't contain enough information to answer the question, say so clearly.
 
 When answering, reference which source(s) you used by mentioning the document name.
@@ -108,8 +107,23 @@ User's question: ${question}
 
 Provide a clear, concise answer:`;
 
-    const result = await model.generateContent(prompt);
-    const answer = result.response.text();
+    let answer;
+    try {
+        console.log(`DEBUG: [Embeddings] Sending prompt to Gemini... (Context length: ${context.length})`);
+        const result = await model.generateContent(prompt);
+        console.log(`DEBUG: [Embeddings] Gemini response received.`);
+
+        try {
+            answer = result.response.text();
+            console.log(`DEBUG: [Embeddings] Answer extracted successfully. Length: ${answer.length}`);
+        } catch (textErr) {
+            console.error(`DEBUG: [Embeddings] Failed to extract text from response. It might be blocked by safety filters.`, textErr);
+            answer = "I'm sorry, I couldn't generate an answer due to a safety filtering or an empty response from the AI model. (ERR_QA_SAFETY)";
+        }
+    } catch (apiErr) {
+        console.error(`DEBUG: [Embeddings] Gemini API call FAILED:`, apiErr);
+        throw apiErr; // Rethrow to be caught by the route handler
+    }
 
     const sources = topChunks.map((item) => ({
         documentName: item.chunk.doc_name,
