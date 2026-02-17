@@ -5,6 +5,7 @@ const { getDb } = require('../db');
 const { chunkText } = require('../chunker');
 const { generateEmbeddings } = require('../embeddings');
 const { extractText, getExtractionMethod } = require('../extractor');
+const { validateId } = require('../middleware/validate');
 
 const router = express.Router();
 
@@ -132,7 +133,7 @@ router.get('/', (req, res) => {
 });
 
 // Get a single document (user's only)
-router.get('/:id', (req, res) => {
+router.get('/:id', validateId(), (req, res) => {
     try {
         const doc = getDb().prepare(
             'SELECT id, name, content, size, created_at FROM documents WHERE id = ? AND user_id = ?'
@@ -147,7 +148,7 @@ router.get('/:id', (req, res) => {
 });
 
 // Delete a document (user's only)
-router.delete('/:id', (req, res) => {
+router.delete('/:id', validateId(), (req, res) => {
     try {
         const db = getDb();
         const doc = db.prepare(
@@ -167,7 +168,7 @@ router.delete('/:id', (req, res) => {
 });
 
 // Get original file content
-router.get('/:id/file', (req, res) => {
+router.get('/:id/file', validateId(), (req, res) => {
     try {
         // Authenticate via token in query param or header (for iframes/images)
         // Since iframes can't easily send headers, we might need a cookie or query param.
@@ -201,7 +202,9 @@ router.get('/:id/file', (req, res) => {
         if (!doc || !doc.original_file) return res.status(404).send('File not found.');
 
         res.setHeader('Content-Type', doc.mime_type || 'application/octet-stream');
-        res.setHeader('Content-Disposition', `inline; filename="${doc.name}"`);
+        // Sanitise filename to prevent header injection
+        const safeName = doc.name.replace(/[\r\n"%]/g, '_');
+        res.setHeader('Content-Disposition', `inline; filename="${safeName}"`);
         res.send(doc.original_file);
     } catch (err) {
         console.error('File retrieve error:', err);

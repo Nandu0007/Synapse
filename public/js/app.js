@@ -88,7 +88,12 @@ async function handleRegister(e) {
 
 function onAuthSuccess() {
     document.getElementById('nav-user').style.display = '';
-    document.getElementById('user-badge').innerHTML = `${ICONS.user} ${currentUser.username}`;
+    const badge = document.getElementById('user-badge');
+    badge.textContent = '';
+    const iconSpan = document.createElement('span');
+    iconSpan.innerHTML = ICONS.user;
+    badge.appendChild(iconSpan);
+    badge.appendChild(document.createTextNode(' ' + currentUser.username));
     document.getElementById('nav-links').style.display = '';
     navigate('home');
 }
@@ -293,7 +298,20 @@ async function loadDocuments() {
             btn.addEventListener('click', () => deleteDocument(Number(btn.dataset.id), btn.dataset.name));
         });
     } catch (err) {
-        listEl.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><h3>Error loading documents</h3><p>${err.message}</p></div>`;
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'empty-state';
+        const errorIcon = document.createElement('div');
+        errorIcon.className = 'empty-icon';
+        errorIcon.textContent = '⚠️';
+        const errorTitle = document.createElement('h3');
+        errorTitle.textContent = 'Error loading documents';
+        const errorMsg = document.createElement('p');
+        errorMsg.textContent = err.message;
+        errorDiv.appendChild(errorIcon);
+        errorDiv.appendChild(errorTitle);
+        errorDiv.appendChild(errorMsg);
+        listEl.innerHTML = '';
+        listEl.appendChild(errorDiv);
     }
 }
 
@@ -871,9 +889,13 @@ function getFileIcon(filename) {
 }
 
 function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    if (typeof text !== 'string') return '';
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
 function showToast(message, type = 'success') {

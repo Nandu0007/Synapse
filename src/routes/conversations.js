@@ -1,5 +1,6 @@
 const express = require('express');
 const { getDb } = require('../db');
+const { validateId, sanitizeString } = require('../middleware/validate');
 
 const router = express.Router();
 
@@ -25,7 +26,7 @@ router.get('/', (req, res) => {
 // Create new conversation
 router.post('/', (req, res) => {
     try {
-        const title = req.body.title || 'New Conversation';
+        const title = sanitizeString(req.body.title || 'New Conversation', 200);
         const result = getDb().prepare(
             'INSERT INTO conversations (user_id, title) VALUES (?, ?)'
         ).run(req.user.id, title);
@@ -42,7 +43,7 @@ router.post('/', (req, res) => {
 });
 
 // Get conversation with messages
-router.get('/:id', (req, res) => {
+router.get('/:id', validateId(), (req, res) => {
     try {
         const db = getDb();
         const convo = db.prepare(
@@ -69,7 +70,7 @@ router.get('/:id', (req, res) => {
 });
 
 // Rename conversation
-router.patch('/:id', (req, res) => {
+router.patch('/:id', validateId(), (req, res) => {
     try {
         const db = getDb();
         const convo = db.prepare(
@@ -78,12 +79,12 @@ router.patch('/:id', (req, res) => {
 
         if (!convo) return res.status(404).json({ error: 'Conversation not found.' });
 
-        const title = req.body.title;
-        if (!title || !title.trim()) {
-            return res.status(400).json({ error: 'Title is required.' });
+        const title = sanitizeString(req.body.title, 200);
+        if (!title) {
+            return res.status(400).json({ error: 'Title is required (max 200 characters).' });
         }
 
-        db.prepare('UPDATE conversations SET title = ? WHERE id = ?').run(title.trim(), convo.id);
+        db.prepare('UPDATE conversations SET title = ? WHERE id = ?').run(title, convo.id);
         res.json({ message: 'Renamed.' });
     } catch (err) {
         console.error('Rename conversation error:', err);
@@ -92,7 +93,7 @@ router.patch('/:id', (req, res) => {
 });
 
 // Delete conversation
-router.delete('/:id', (req, res) => {
+router.delete('/:id', validateId(), (req, res) => {
     try {
         const db = getDb();
         const convo = db.prepare(
