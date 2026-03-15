@@ -134,7 +134,7 @@ function stopProcessing() {
 
 async function handleLogin(e) {
     e.preventDefault();
-    const email = document.getElementById('login-email').value;
+    const usernameOrEmail = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
     const rememberMe = document.getElementById('login-remember').checked;
     const errorEl = document.getElementById('login-error');
@@ -143,7 +143,7 @@ async function handleLogin(e) {
         const res = await fetch(`${API_BASE}/api/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ usernameOrEmail, password }),
         });
         const data = await res.json();
 

@@ -68,27 +68,36 @@ router.post('/register', async (req, res) => {
             user: { id: userId, username: cleanUsername.toLowerCase(), email: cleanEmail },
         });
     } catch (err) {
-        console.error('Register error:', err);
-        res.status(500).json({ error: 'Registration failed.' });
+        console.error('Register error:', err.message);
+        console.error('Stack:', err.stack);
+        res.status(500).json({ error: 'Registration failed. Please try again.' });
     }
 });
 
 // Login
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { usernameOrEmail, password } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required.' });
+        if (!usernameOrEmail || !password) {
+            return res.status(400).json({ error: 'Username/Email and password are required.' });
         }
 
-        const cleanEmail = sanitizeString(email, 254).toLowerCase();
-        if (!isValidEmail(cleanEmail)) {
-            return res.status(400).json({ error: 'Please enter a valid email address.' });
-        }
-
+        const input = sanitizeString(usernameOrEmail, 254).toLowerCase();
         const db = getDb();
-        const user = db.prepare('SELECT * FROM users WHERE email = ?').get(cleanEmail);
+        
+        // Try to find user by email first, then by username
+        let user = null;
+        
+        // Check if input is an email
+        if (isValidEmail(input)) {
+            user = db.prepare('SELECT * FROM users WHERE email = ?').get(input);
+        }
+        
+        // If not found by email, try username
+        if (!user) {
+            user = db.prepare('SELECT * FROM users WHERE username = ?').get(input);
+        }
 
         if (!user) {
             return res.status(401).json({ error: 'Invalid email or password.' });
