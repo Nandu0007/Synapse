@@ -16,7 +16,7 @@ const upload = multer({
         const allowed = [
             '.txt', '.md', '.csv', '.json', '.log', '.xml', '.html', '.css', '.js', '.py', '.java', '.c', '.cpp', '.h',
             '.pdf',
-            '.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.tiff', '.tif',
+            '.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.tiff', '.tif', '.avif',
         ];
         const ext = path.extname(file.originalname).toLowerCase();
         if (allowed.includes(ext)) cb(null, true);
@@ -24,8 +24,21 @@ const upload = multer({
     },
 });
 
+const handleUpload = (req, res, next) => {
+    upload.single('file')(req, res, (err) => {
+        if (err) {
+            if (err.message?.includes('not supported') || err instanceof multer.MulterError) {
+                return res.status(400).json({ error: err.message });
+            }
+            console.error('Multer upload error:', err);
+            return res.status(500).json({ error: `Upload error: ${err.message}` });
+        }
+        next();
+    });
+};
+
 // Upload a document (scoped to current user)
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', handleUpload, async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded.' });
@@ -105,9 +118,6 @@ router.post('/', upload.single('file'), async (req, res) => {
             id: Number(docId), name, size: req.file.size, chunks: chunks.length,
         });
     } catch (err) {
-        if (err.message?.includes('not supported')) {
-            return res.status(400).json({ error: err.message });
-        }
         console.error('DEBUG: [Upload] Unexpected error details:', err);
         res.status(500).json({ error: `Failed to upload document. ${err.message} (ERR_UNKNOWN)` });
     }

@@ -10,8 +10,8 @@ async function loadPdfjs() {
     return _pdfjsLib;
 }
 
-const IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
-const IMAGE_MIMES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/bmp', 'image/tiff'];
+const IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.tiff', '.tif', '.avif'];
+const IMAGE_MIMES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/bmp', 'image/tiff', 'image/avif'];
 
 function isImage(ext, mime) {
     return IMAGE_EXTS.includes(ext) || IMAGE_MIMES.includes(mime);
@@ -71,7 +71,7 @@ async function extractImage(buffer, mimetype) {
     if (!apiKey) throw new Error('GEMINI_API_KEY not set — cannot extract text from images.');
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
 
     const prompt = `Analyze this image and extract ALL text content from it.
 If it contains text (handwritten, printed, typed), extract and return all of it preserving structure.

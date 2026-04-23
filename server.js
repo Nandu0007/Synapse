@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ override: true });
 
 const express = require('express');
 const cors = require('cors');
@@ -16,7 +16,7 @@ if (missingEnvVars.length > 0) {
     process.exit(1);
 }
 
-console.log('✅ Environment variables loaded successfully');
+console.log(`✅ Environment variables loaded successfully. KEY=${process.env.GEMINI_API_KEY}`);
 
 const auth = require('./src/middleware/auth');
 const authRouter = require('./src/routes/auth');
